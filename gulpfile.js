@@ -3,7 +3,7 @@ var gulp = require('gulp'),
 
 gulp.task('connect', function() {
   connect.server({
-    root: 'src',
+    root: ['src','components'],
     livereload: true
   });
 });
