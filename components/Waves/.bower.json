@@ -1,0 +1,15 @@
+{
+  "name": "Waves",
+  "homepage": "https://github.com/publicis-indonesia/Waves",
+  "version": "0.3.1",
+  "_release": "0.3.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.3.1",
+    "commit": "ae860f7512243ddcec5f76ef99d0d8104996594e"
+  },
+  "_source": "git@github.com:publicis-indonesia/Waves.git",
+  "_target": "~0.3.1",
+  "_originalSource": "git@github.com:publicis-indonesia/Waves.git",
+  "_direct": true
+}
