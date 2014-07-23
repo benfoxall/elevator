@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/benfoxall/elevator",
   "dependencies": {
-    "gulp": "~3.8.6"
+    "gulp": "~3.8.6",
+    "gulp-connect": "~2.0.6"
   }
 }
