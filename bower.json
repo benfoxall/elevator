@@ -14,5 +14,8 @@
     "bower_components",
     "test",
     "tests"
-  ]
+  ],
+  "dependencies": {
+    "Waves": "git@github.com:publicis-indonesia/Waves.git#~0.3.1"
+  }
 }
