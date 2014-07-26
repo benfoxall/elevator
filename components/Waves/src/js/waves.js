@@ -27,7 +27,12 @@
             } while (obj = obj.offsetParent);
         }
 
-        return {
+        return window.Reveal ?
+        {
+            top: top*Reveal.getScale(), 
+            left: left*Reveal.getScale()
+        } :
+        {
             top: top, 
             left: left
         };
