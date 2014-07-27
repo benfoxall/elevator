@@ -28,13 +28,17 @@
 		<div class="reveal">
 			<div class="slides">
 				<section>
-					<div href="#" class="waves-effect waves-icon icon-button">
+					<div class="waves-effect waves-icon icon-button">
 						<i class="icon-camera"></i>
 					</div>
 				</section>
 
+				<section id="take-photo">
+					<p>[take photo]</p>
+				</section>
+
 				<section>
-					<div href="#" class="waves-effect waves-icon icon-button">
+					<div class="waves-effect waves-icon icon-button">
 						<i class="icon-videocam"></i>
 					</div>
 				</section>
@@ -63,6 +67,29 @@
 			});
 
 			Waves.displayEffect();
+
+
+			function advance(){
+				var t = this;
+				setTimeout(function(){
+					t.style.webkitTransform = 'scale(0)';
+					setTimeout(function(){
+						Reveal.right();
+						t.style.webkitTransform = 'scale(1)';
+					},500)
+				},300);
+			}
+		
+			Array.prototype.forEach.call(
+				document.querySelectorAll('.waves-effect'), 
+				function(i) {
+
+					if (window.Touch) i.addEventListener('touchend', advance, false);
+
+					i.addEventListener('mouseup', advance, false);
+				}
+			);
+
 		</script>
 	</body>
 </html>
