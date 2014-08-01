@@ -1,13 +1,19 @@
 function circler(a,b,c){
 	var bab = p_bisect(a,b),
-		bac = p_bisect(a,c),
-		center = bab.intersectionWith(bac).elements.slice(0,2),
-		radius = $V(a).subtract(center).modulus();
+		bac = p_bisect(a,c);
 
-	return {
-		center: center,
-		radius: radius
-	};
+	if(bab && bac){
+		var	center = bab.intersectionWith(bac).elements.slice(0,2),
+			radius = $V(a).subtract(center).modulus();
+
+		return {
+			center: center,
+			radius: radius
+		}
+	}
+
+	// probably in a straight line
+	return null;
 
 	// gives the pependicular bisecting line for two vectores
 	function p_bisect(a,b){
