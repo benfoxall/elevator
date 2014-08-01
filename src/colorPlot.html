@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>color plot</title>
+	<style type="text/css">
+		canvas{outline: 1px solid blue;}
+	</style>
+</head>
+<body>
+	<!-- <canvas width="500" height="500" id="container"></canvas> -->
+
+	<script type="text/javascript" src="/three.js/three.js"></script>
+	<script type="text/javascript">
+
+		// container = document.getElementById( 'container' );
+var width = window.innerWidth;
+var height = window.innerHeight;
+
+var renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(width, height);
+renderer.setClearColor(0xf5f5f5, 1);
+document.body.appendChild(renderer.domElement);
+
+
+
+		scene = new THREE.Scene();
+
+		camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
+		camera.position.z = 1250;
+
+		  var particleMaterial = new THREE.ParticleBasicMaterial({ 
+		    transparent: true, size: 15, //color: 0xff00cc,
+		    map: generateTexture(0)
+		  });
+
+		var radius = 200;
+		var geometry = new THREE.Geometry();
+
+		for ( var i = 0; i < (640*400); i ++ ) {
+
+			var vertex = new THREE.Vector3();
+			vertex.x = Math.random() * 2 - 1;
+			vertex.y = Math.random() * 2 - 1;
+			vertex.z = Math.random() * 2 - 1;
+			// vertex.z = 0;
+			vertex.multiplyScalar( radius );
+
+			geometry.vertices.push( vertex );
+
+		}
+
+		particles = new THREE.ParticleSystem( geometry, particleMaterial );
+
+scene.add(particles)
+
+light = new THREE.AmbientLight(0xff00cc);
+scene.add(light)
+
+
+// renderer.render(scene, camera);
+
+function render() {
+  requestAnimationFrame(render);
+  
+  particles.rotation.y += 0.002;
+
+  // TWEEN.update();
+  renderer.render(scene, camera);
+}
+
+render()
+
+
+// to be parameterised
+function generateTexture(i){
+  var canvas = document.createElement( 'canvas' ),
+      size = 1;
+  canvas.width = size;
+  canvas.height = size;
+
+  var ctx = canvas.getContext( '2d' );
+
+  ctx.fillStyle = i === 0 ? '#f00' :
+                  i === 1 ? '#00f' :
+                  i === 2 ? '#0f0' : 
+                  i === 3 ? '#000' : 
+                  i === 4 ? '#fc0' : 
+                  '#aaa';
+
+
+  ctx.fillStyle = 'rgba(255,0,150,0.2)'
+
+  // ctx.fillStyle = i === 4 ? '#f00' : '#aaa';
+  ctx.beginPath();
+  ctx.arc(size/2, size/2, size/2,0,Math.PI*2);
+  ctx.fill();
+
+  var t = new THREE.Texture( canvas );
+  t.needsUpdate = true;
+  return t;
+}
+	</script>
+</body>
+</html>
