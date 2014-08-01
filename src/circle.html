@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Circle Select</title>
+	<style type="text/css">canvas{background: #ccc;}body{margin: 0}</style>
+</head>
+<body>
+	<canvas width="500" height="500" id="c"></canvas>
+
+    <script src="/sylvester/sylvester.js"></script>
+    <script src="/js/elevator.js"></script>
+
+    <script type="text/javascript">
+
+var ctx = c.getContext('2d'),
+	points = [];
+
+function plot(e){
+
+	ctx.fillStyle = '#08f';
+	ctx.beginPath();
+	ctx.arc(e.x,e.y,5,2*Math.PI,false)
+	ctx.fill()
+
+	points.push([e.x,e.y]);
+	if(points.length > 2){
+		var c = circler.apply(this, points);
+
+		points = []
+
+		if(!c) return;
+
+		ctx.fillStyle = 'rgba(255,0,150,0.4)';
+		ctx.beginPath();
+		ctx.arc(c.center[0],c.center[1],c.radius,2*Math.PI,false)
+		ctx.fill();
+	}
+
+}
+
+document.body.addEventListener('touchstart', prevent(t(plot)), false);
+document.body.addEventListener('mousedown', prevent(plot), false);
+
+function t(fn){
+	// crap polyfill for touch events
+	return function(e){
+		var touches = e.touches;
+
+		for (var i=0; i<touches.length; i++) {
+		    fn({
+				x:touches[i].pageX,
+				y:touches[i].pageY
+			})
+		}
+
+	}
+}
+
+function prevent(fn){
+	return function(e){
+		e.preventDefault();
+		return fn(e)
+	}
+}
+
+    </script>
+</body>
+</html>
