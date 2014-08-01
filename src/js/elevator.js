@@ -16,10 +16,12 @@ function circler(a,b,c){
 		pbac = Line.create(ac_mid, ac_perp);
 
 
-	var center = pbab.intersectionWith(pbac);
+	var center = pbab.intersectionWith(pbac).elements.slice(0,2);
+
+	var radius = $V([a[0]-center[0], a[1]-center[1]]).modulus();
 
 	return {
-		center: center.elements.slice(0,2),
-		radius: 1
+		center: center,
+		radius: radius
 	};
 }
