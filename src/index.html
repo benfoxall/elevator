@@ -21,6 +21,10 @@
 			font-size:100px;
 			color:#000 !important;
 		}
+		#circleSelect{
+			/*background: rgba(0,0,255,0.2);*/
+			position: absolute;
+		}
 		</style>
 	</head>
 	<body>
@@ -38,7 +42,8 @@
 				</section>
 
 				<section>
-					<img id="photo" />
+					<canvas id="circleSelect"></canvas>
+					<img id="photo" src="img/example-1.png" />
 				</section>
 
 				<section>
@@ -102,6 +107,8 @@
 		</script>
 
 
+		<script src="/sylvester/sylvester.js"></script>
+		<script src="js/elevator.js"></script>
 		<script src="script.js"></script>
 	</body>
 </html>

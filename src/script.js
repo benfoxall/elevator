@@ -60,3 +60,76 @@ Reveal.addEventListener( 'slidechanged', function( event ) {
 		photo.src=img;
 	}
 } );
+
+
+
+
+// Circle selector
+(function(photo, canvas){
+
+	var points = [];
+
+	function generate(){
+		console.log("generate")
+		canvas.width = photo.width;
+		canvas.height = photo.height;
+		points = [];
+	}
+
+	photo.addEventListener('load', generate, false);
+
+	// perhaps it's loaded already
+	if(photo.width) generate();
+
+
+
+	//
+	canvas.addEventListener('mousedown', function(e){
+		e.preventDefault();
+		console.log(e)
+
+		// function click_handler(e) {
+
+		var zoom = window.Reveal && Reveal.getScale() || 1;
+
+		var rect = this.getBoundingClientRect();
+		var left = (e.clientX/zoom) - rect.left - this.clientLeft + this.scrollLeft;
+		var top = (e.clientY/zoom) - rect.top - this.clientTop + this.scrollTop;
+		console.log(left, top)
+
+var ctx = canvas.getContext('2d');
+
+
+	ctx.fillStyle = '#08f';
+	ctx.beginPath();
+	ctx.arc(left, top,5,2*Math.PI,false)
+	ctx.fill()
+
+	points.push([left, top]);
+	if(points.length > 2){
+		var c = circler.apply(this, points);
+
+		points = []
+
+		if(!c) return;
+
+		ctx.fillStyle = 'rgba(255,0,150,0.4)';
+		ctx.beginPath();
+		ctx.arc(c.center[0],c.center[1],c.radius,2*Math.PI,false)
+		ctx.fill();
+	}
+
+
+
+    // var dot = document.createElement('div');
+    // dot.setAttribute('style', 'position:absolute; width: 2px; height: 2px; top: '+top+'px; left: '+left+'px; background: red;');
+    // this.appendChild(dot);
+// }
+	}, false)
+
+})
+.apply(this,
+	['photo', 'circleSelect']
+	.map(document.getElementById.bind(document))
+)
+
