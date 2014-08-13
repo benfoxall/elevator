@@ -7,8 +7,8 @@
 	</style>
 </head>
 <body>
-	<!-- <canvas width="500" height="500" id="container"></canvas> -->
-	<script type="x-shader/x-vertex" id="vertexshader">
+
+<script type="x-shader/x-vertex" id="vertexshader">
 attribute vec4 c;
 varying vec4 vc;
 
@@ -60,48 +60,109 @@ var height = window.innerHeight;
 
 var renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(width, height);
-renderer.setClearColor(0xf5f5f5, 1);
+renderer.setClearColor(0xffffff, 1);
 document.body.appendChild(renderer.domElement);
 
 
 scene = new THREE.Scene();
 
-camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
+camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000000 );
 camera.position.z = 1000;
 
-var radius = 200;
-var geometry = new THREE.Geometry();
+renderer.render(scene, camera);
 
-for ( var i = 0; i < 10000; i ++ ) {
+function start(data){
 
-	var vertex = new THREE.Vector3();
-	vertex.x = Math.random() * 2 - 1;
-	vertex.y = Math.random() * 2 - 1;
-	vertex.z = Math.random() * 2 - 1;
-	vertex.z = 0;
-	vertex.multiplyScalar( radius );
+	var radius = 200;
+	var geometry = new THREE.Geometry();
 
-	geometry.vertices.push( vertex );
+	// debugger
+	for (var x = 0; x < data.width; x++){
+		for (var y = 0; y < data.height; y++){
 
-	attributes.c.value.push(new THREE.Color( 0xffffff*Math.random() ));
+			var i = (x + (y*data.width)) * 4;
+			// var d = data[i];
+
+			var vertex = new THREE.Vector3();
+			vertex.x = x - (data.width/2);
+			vertex.y = y - (data.height/2);
+
+			// vertex.x/=2;
+			// vertex.y/=2;
+			// vertex.z = Math.random() * 200 - 100;
+			// vertex.z = 0;
+			vertex.x = data.data[i];
+			vertex.y = data.data[i+1] - 127;
+			vertex.z = data.data[i+2] - 127;
+			// vertex.multiplyScalar( radius );
+
+			// vertex.x = Math.random() * 200 - 100;
+			// vertex.y = Math.random() * 200 - 100;
+
+			geometry.vertices.push( vertex );
+
+			// attributes.c.value.push(new THREE.Color(Math.random(),Math.random(),Math.random()));
+			// attributes.c.value.push(new THREE.Color(0,0,0));
+			attributes.c.value.push(new THREE.Color(data.data[i]/255,data.data[i+1]/255,data.data[i+2]/255));
+
+
+		}
+	}
+
+
+	// debugger;
+	// for ( var i = 0; i < 1000; i ++ ) {
+
+	// 	var vertex = new THREE.Vector3();
+	// 	vertex.x = Math.random() * 200 - 100;
+	// 	vertex.y = Math.random() * 200 - 100;
+	// 	vertex.z = Math.random() * 200 - 100;
+	// 	vertex.z = 0;
+	// 	vertex.multiplyScalar( radius );
+
+	// 	geometry.vertices.push( vertex );
+
+	// 	attributes.c.value.push(new THREE.Color( 0xffffff*Math.random() ));
+
+	// }
+
+	particles = new THREE.ParticleSystem( geometry, shaderMaterial );
+
+	scene.add(particles)
+
+
+	function render() {
+	  requestAnimationFrame(render);
+
+	  particles.rotation.y += 0.002;
+
+	  renderer.render(scene, camera);
+	}
+
+	render()
 
 }
 
-particles = new THREE.ParticleSystem( geometry, shaderMaterial );
+var img = new Image;
+img.onload = function(){
+	var c = document.createElement('canvas');
+	c.width = img.width;
+	c.height = img.height;
 
-scene.add(particles)
+	var ctx = c.getContext('2d');
+	ctx.drawImage(img,0,0);
 
+	//document.body.appendChild(c)
 
-function render() {
-  requestAnimationFrame(render);
+	var data = ctx.getImageData(0,0,c.width,c.height);
 
-  particles.rotation.y += 0.002;
-  
-  renderer.render(scene, camera);
+	// debugger;
+
+	// console.log(img.width)
+
+	start(data);
 }
-
-render()
-
+img.src='img/example-1.png'
 
 	</script>
 </body>
