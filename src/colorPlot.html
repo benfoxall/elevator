@@ -116,7 +116,7 @@ function start(data){
 	scene.add(particles)
 
 
-  var group = new THREE.Object3D();
+  rgbcube = new THREE.Object3D();
 
 	function ball(color){
 		var r = (color & 0xff0000) >> 16,
@@ -130,7 +130,7 @@ function start(data){
 		sphere.position.x = (r - 127);
 		sphere.position.y = (g - 127);
 		sphere.position.z = (b - 127);
-		group.add( sphere );
+		rgbcube.add( sphere );
 	}
 
 
@@ -163,9 +163,28 @@ function start(data){
 
 
    var line = new THREE.Line(geometry, material);
-   group.add(line);
+   rgbcube.add(line);
 
-   scene.add(group)
+
+
+var cube = new THREE.BoxGeometry( 255, 255, 255 );
+var cubematerial = new THREE.MeshBasicMaterial( {wireframe: false, color: 0x000000, opacity: 0.2, transparent:true} );
+var cube = new THREE.Mesh( cube, cubematerial );
+
+
+rgbcube.add( cube );
+
+
+   scene.add(rgbcube)
+
+
+
+
+
+// offscreen for now
+ 	rgbcube.position.z = 200;
+	rgbcube.position.y = -500;
+	rgbcube.rotation.y = 0;
 
 
 
@@ -173,8 +192,10 @@ function start(data){
 	  requestAnimationFrame(render);
 
 	  // rotation
-
-	  // group.rotation.y = particles.rotation.y += 0.002;
+	  if(autoRotate){
+  		rgbcube.rotation.y = particles.rotation.y += 0.002;
+	  }
+		  
 
 	  renderer.render(scene, camera);
 	  TWEEN.update();
@@ -190,8 +211,8 @@ img.onload = function(){
 	c.width = 200;//img.width;
 	c.height = 200;//img.height;
 
-	// c.width = img.width;
-	// c.height = img.height;
+	c.width = img.width;
+	c.height = img.height;
 
 	var ctx = c.getContext('2d');
 	ctx.drawImage(img,0,0);
@@ -221,10 +242,55 @@ function flop(){
 		// .delay(200)
 		.onComplete(flip);
 	tween.start();
+}
+
+// flip();
+
+// show rgb
+function step1(){
+
+	rgbcube.position.z = 200;
+	rgbcube.position.y = -500;
+	rgbcube.rotation.y = 0;
+
+	(new TWEEN.Tween(rgbcube.position)
+		.to({y: 0}, 2000)
+		.easing(TWEEN.Easing.Quadratic.Out)
+	).start();
+
+	(new TWEEN.Tween(rgbcube.rotation)
+		.to({y: (2*Math.PI) + 0.3, x: 0.2}, 5000)
+		.easing(TWEEN.Easing.Quadratic.Out)
+	).start();
+}
+
+var autoRotate;
+
+// morph the pixels into the space
+function step2(){
+
+	// transition image to rgb
+	(new TWEEN.Tween(uniforms.state)
+		.to({value: 1}, 5000)
+		.easing(TWEEN.Easing.Exponential.InOut)
+	).start();
+
+	(new TWEEN.Tween(particles.rotation)
+		.to({y: 0.3, x: 0.2}, 5000)
+		.easing(TWEEN.Easing.Exponential.InOut)
+	).start();
+
+	(new TWEEN.Tween(particles.position)
+		.to({z: 200}, 5000)
+		.easing(TWEEN.Easing.Exponential.InOut)
+		.onComplete(function(){
+			console.log("completed")
+			autoRotate = true;
+		})
+	).start();
 
 }
 
-flip();
 
 	</script>
 </body>
