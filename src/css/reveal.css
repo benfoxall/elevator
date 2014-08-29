@@ -234,8 +234,8 @@ body {
 .reveal img,
 .reveal video,
 .reveal iframe {
-	max-width: 95%;
-	max-height: 95%;
+/*	max-width: 95%;
+	max-height: 95%;*/
 }
 
 /** Prevents layering issues in certain browser/transition combinations */
@@ -560,7 +560,7 @@ body {
 	display: none;
 	position: absolute;
 	width: 100%;
-	padding: 20px 0px;
+	/*padding: 20px 0px;*/
 
 	z-index: 10;
 	line-height: 1.2em;
