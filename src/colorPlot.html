@@ -9,6 +9,12 @@
 <body>
 
 <script type="x-shader/x-vertex" id="vertexshader">
+
+uniform float state;
+
+attribute vec3 custompositiona;
+attribute vec3 custompositionb;
+
 attribute vec4 c;
 varying vec4 vc;
 
@@ -16,7 +22,7 @@ void main() {
   vc = c;
   gl_Position = projectionMatrix *
                 modelViewMatrix *
-                vec4(position,1.0);
+                vec4(position * (custompositiona+(state*(custompositionb - custompositiona))),1.0);
 }
 </script>
 <script type="x-shader/x-fragment" id="fragmentshader">
@@ -28,6 +34,7 @@ void main() {
 </script>
 
 <script type="text/javascript" src="/three.js/three.js"></script>
+<script type="text/javascript" src="/tweenjs/build/tween.min.js"></script>
 <script type="text/javascript">
 
 // particles
@@ -36,9 +43,25 @@ attributes = {
 		type: 'c', 
 		value: []
 	},
+	// r:{
+	// 	type: 'f', 
+	// 	value: []
+	// },
+	prgb:{
+		type:'v3',
+		value: []
+	},
+
+	custompositiona: { type: 'v3', value: [] },
+	custompositionb: { type: 'v3', value: [] },
+
+	// displacement: {	type: 'v3', value: [] },
 };
 
-uniforms = {};
+uniforms = {
+	// state: 0.0
+	state: { type: "f", value: 0.0 },
+};
 
 var shaderMaterial = new THREE.ShaderMaterial( {
 
@@ -55,8 +78,8 @@ var shaderMaterial = new THREE.ShaderMaterial( {
 
 
 		// container = document.getElementById( 'container' );
-var width = window.innerWidth;
-var height = window.innerHeight;
+var width = 960;//window.innerWidth;
+var height = 540;//window.innerHeight;
 
 var renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(width, height);
@@ -66,7 +89,7 @@ document.body.appendChild(renderer.domElement);
 
 scene = new THREE.Scene();
 
-camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000000 );
+camera = new THREE.PerspectiveCamera( 45, width / height, 1, 1000000 );
 camera.position.z = 1000;
 
 renderer.render(scene, camera);
@@ -91,15 +114,35 @@ function start(data){
 			// vertex.y/=2;
 			// vertex.z = Math.random() * 200 - 100;
 			// vertex.z = 0;
-			vertex.x = data.data[i];
-			vertex.y = data.data[i+1] - 127;
-			vertex.z = data.data[i+2] - 127;
+			// vertex.x = data.data[i];
+			// vertex.y = data.data[i+1] - 127;
+			vertex.z = 0;//data.data[i+2] - 127;
 			// vertex.multiplyScalar( radius );
 
 			// vertex.x = Math.random() * 200 - 100;
 			// vertex.y = Math.random() * 200 - 100;
 
+
+			vertex.x = vertex.y = vertex.z = 1;
+
 			geometry.vertices.push( vertex );
+
+
+			var vertex_rgb = new THREE.Vector3(100,200,300);
+			// vertex_rgb.x = data.data[i  ] - 127;
+			// vertex_rgb.y = data.data[i+1] - 127;
+			// vertex_rgb.z = data.data[i+2] - 127;
+			attributes.prgb.value.push(vertex)
+
+			// attributes.r.value.push(250)
+
+
+			attributes.custompositiona.value.push(new THREE.Vector3(x - (data.width/2),y - (data.height/2),0))
+			// attributes.custompositionb.value.push(new THREE.Vector3(x - (data.width/2),y - (data.height/2),0))
+
+			// attributes.custompositionb.value.push(new THREE.Vector3(Math.random()*300,Math.random()*300,Math.random()*300))
+
+			attributes.custompositionb.value.push(new THREE.Vector3(data.data[i],data.data[i+1],data.data[i+2]));
 
 			// attributes.c.value.push(new THREE.Color(Math.random(),Math.random(),Math.random()));
 			// attributes.c.value.push(new THREE.Color(0,0,0));
@@ -109,6 +152,13 @@ function start(data){
 		}
 	}
 
+	// var displacement = attributes.displacement.value;
+
+	// for( var v = 0; v < geometry.vertices.length; v ++ ) {
+
+	// 	displacement[ v ] = new THREE.Vector3( Math.random()*20, Math.random()*20, Math.random()*20 );
+
+	// }
 
 	// debugger;
 	// for ( var i = 0; i < 1000; i ++ ) {
@@ -134,9 +184,10 @@ function start(data){
 	function render() {
 	  requestAnimationFrame(render);
 
-	  particles.rotation.y += 0.002;
+	  // particles.rotation.y += 0.002;
 
 	  renderer.render(scene, camera);
+	  TWEEN.update();
 	}
 
 	render()
@@ -162,7 +213,31 @@ img.onload = function(){
 
 	start(data);
 }
-img.src='img/example-1.png'
+img.src='img/example-3.png'
+
+
+var x = {};
+
+function flip(){
+	var tween = new TWEEN.Tween(uniforms.state)
+		.to({value: 1}, 8000)
+		.easing(TWEEN.Easing.Exponential.InOut)
+		// .delay(200)
+		.onComplete(flop);
+	tween.start();
+}
+
+function flop(){
+	var tween = new TWEEN.Tween(uniforms.state)
+		.to({value: 0}, 8000)
+		.easing(TWEEN.Easing.Exponential.InOut)
+		// .delay(200)
+		.onComplete(flip);
+	tween.start();
+
+}
+
+flip();
 
 	</script>
 </body>
