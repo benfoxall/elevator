@@ -43,19 +43,10 @@ attributes = {
 		type: 'c', 
 		value: []
 	},
-	// r:{
-	// 	type: 'f', 
-	// 	value: []
-	// },
-	prgb:{
-		type:'v3',
-		value: []
-	},
 
 	custompositiona: { type: 'v3', value: [] },
 	custompositionb: { type: 'v3', value: [] },
 
-	// displacement: {	type: 'v3', value: [] },
 };
 
 uniforms = {
@@ -77,7 +68,6 @@ var shaderMaterial = new THREE.ShaderMaterial( {
 });
 
 
-		// container = document.getElementById( 'container' );
 var width = 960;//window.innerWidth;
 var height = 540;//window.innerHeight;
 
@@ -89,7 +79,7 @@ document.body.appendChild(renderer.domElement);
 
 scene = new THREE.Scene();
 
-camera = new THREE.PerspectiveCamera( 45, width / height, 1, 1000000 );
+camera = new THREE.PerspectiveCamera( 30.25, width / height, 1, 1000000 );
 camera.position.z = 1000;
 
 renderer.render(scene, camera);
@@ -104,83 +94,26 @@ function start(data){
 		for (var y = 0; y < data.height; y++){
 
 			var i = (x + (y*data.width)) * 4;
-			// var d = data[i];
-
-			// var vertex = new THREE.Vector3();
-			// vertex.x = x - (data.width/2);
-			// vertex.y = y - (data.height/2);
-
-			// vertex.x/=2;
-			// vertex.y/=2;
-			// vertex.z = Math.random() * 200 - 100;
-			// vertex.z = 0;
-			// vertex.x = data.data[i];
-			// vertex.y = data.data[i+1] - 127;
-			// vertex.z = 0;//data.data[i+2] - 127;
-			// vertex.multiplyScalar( radius );
-
-			// vertex.x = Math.random() * 200 - 100;
-			// vertex.y = Math.random() * 200 - 100;
-
-
-			// vertex.x = vertex.y = vertex.z = 1;
 
 			geometry.vertices.push( new THREE.Vector3(1,1,1) );
 
 
-			// var vertex_rgb = new THREE.Vector3(100,200,300);
-			// vertex_rgb.x = data.data[i  ] - 127;
-			// vertex_rgb.y = data.data[i+1] - 127;
-			// vertex_rgb.z = data.data[i+2] - 127;
-			// attributes.prgb.value.push(vertex)
-
-			// attributes.r.value.push(250)
-
-
 			attributes.custompositiona.value.push(new THREE.Vector3(x - (data.width/2),(data.height/2)-y,0))
-			// attributes.custompositionb.value.push(new THREE.Vector3(x - (data.width/2),y - (data.height/2),0))
 
-			// attributes.custompositionb.value.push(new THREE.Vector3(Math.random()*300,Math.random()*300,Math.random()*300))
 
 			attributes.custompositionb.value.push(new THREE.Vector3(data.data[i]-127,data.data[i+1]-127,data.data[i+2]-127));
 
-			// attributes.c.value.push(new THREE.Color(Math.random(),Math.random(),Math.random()));
-			// attributes.c.value.push(new THREE.Color(0,0,0));
+
 			attributes.c.value.push(new THREE.Color(data.data[i]/255,data.data[i+1]/255,data.data[i+2]/255));
 
 
 		}
 	}
 
-	// var displacement = attributes.displacement.value;
-
-	// for( var v = 0; v < geometry.vertices.length; v ++ ) {
-
-	// 	displacement[ v ] = new THREE.Vector3( Math.random()*20, Math.random()*20, Math.random()*20 );
-
-	// }
-
-	// debugger;
-	// for ( var i = 0; i < 1000; i ++ ) {
-
-	// 	var vertex = new THREE.Vector3();
-	// 	vertex.x = Math.random() * 200 - 100;
-	// 	vertex.y = Math.random() * 200 - 100;
-	// 	vertex.z = Math.random() * 200 - 100;
-	// 	vertex.z = 0;
-	// 	vertex.multiplyScalar( radius );
-
-	// 	geometry.vertices.push( vertex );
-
-	// 	attributes.c.value.push(new THREE.Color( 0xffffff*Math.random() ));
-
-	// }
 
 	particles = new THREE.ParticleSystem( geometry, shaderMaterial );
 
 	scene.add(particles)
-
-
 
 
   var group = new THREE.Object3D();
@@ -239,9 +172,9 @@ function start(data){
 	function render() {
 	  requestAnimationFrame(render);
 
-	  particles.rotation.y += 0.002;
+	  // rotation
 
-	  group.rotation.y = particles.rotation.y
+	  // group.rotation.y = particles.rotation.y += 0.002;
 
 	  renderer.render(scene, camera);
 	  TWEEN.update();
@@ -263,13 +196,7 @@ img.onload = function(){
 	var ctx = c.getContext('2d');
 	ctx.drawImage(img,0,0);
 
-	//document.body.appendChild(c)
-
 	var data = ctx.getImageData(0,0,c.width,c.height);
-
-	// debugger;
-
-	// console.log(img.width)
 
 	start(data);
 }
