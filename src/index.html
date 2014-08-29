@@ -26,6 +26,11 @@
 			position: absolute;
 			cursor: crosshair;
 		}
+		#t{
+			width:960px;
+			height:540px;
+			background: red;
+		}
 		</style>
 	</head>
 	<body>
@@ -33,18 +38,25 @@
 		<div class="reveal">
 			<div class="slides">
 				<section>
+					<div id="t"></div>
+				</section>
+				<section>
 					<div class="waves-effect waves-icon icon-button">
 						<i class="icon-camera"></i>
 					</div>
 				</section>
 
 				<section id="getPhoto">
-					<video></video>
+					<video width="960" height="540"></video>
 				</section>
 
 				<section>
 					<canvas id="circleSelect"></canvas>
 					<img id="photo" src="img/example-1.png" />
+				</section>
+
+				<section>
+					<canvas id="colorPlot" width="500" height="500"></canvas>
 				</section>
 
 				<section>
@@ -58,7 +70,6 @@
 		<script src="lib/js/head.min.js"></script>
 		<script src="js/reveal.min.js"></script>
 		<script src="/Waves/src/js/waves.js"></script>
-	
 
 		<script>
 			Reveal.initialize({
@@ -69,6 +80,8 @@
 
 				transition: 'none',
 
+				width: 960,
+				height: 540, 
 				margin: 0,
 
 				// Optional libraries used to extend on reveal.js
