@@ -6,12 +6,28 @@ navigator.getMedia = ( navigator.getUserMedia ||
 var URL = window.URL || window.webkitURL;
 
 
+var constraints = {
+  //qvga
+  video: {
+    mandatory: {
+
+		// maxWidth: 320,
+		// maxHeight: 180
+
+		// maxWidth: 960,
+		// maxHeight: 540,
+
+		maxWidth: 640,
+		maxHeight: 360,
+
+    }
+  },
+  audio: false
+};
+
 // calls back with the blob url of the video
 function getVideo(callback){
-	navigator.getMedia({
-      video: true,
-      audio: false
-    },
+	navigator.getMedia(constraints,
     function(stream) {
     	callback(URL.createObjectURL(stream))
     },
@@ -48,8 +64,8 @@ Reveal.addEventListener( 'slidechanged', function( event ) {
 		// start the video
 		var v = document.querySelector('video');
 		var canvas = document.createElement('canvas');
-		canvas.width = v.videoWidth; canvas.height = v.videoHeight;
-		canvas.getContext("2d").drawImage(v, 0, 0);
+		canvas.width = v.width; canvas.height = v.height;
+		canvas.getContext("2d").drawImage(v, 0, 0, canvas.width, canvas.height);
 
 		var img = canvas.toDataURL("image/png");
 		
