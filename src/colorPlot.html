@@ -39,17 +39,20 @@ vec4 h_no  = vec4(0.0,0.0,0.0,0.1);
 
 void main() {
 
-
-	if(distance(centre, custompositiona) < radius){
-    vc = c+(highlight*(h_yes-c));
+	// highlight the circle
+	if(highlight > 0.0){
+		if(distance(centre, custompositiona) < radius){
+	    vc = c+(highlight*(h_yes-c));
+		} else {
+	    vc = c+(highlight*(h_no-c));
+		}	
 	} else {
-    vc = c+(highlight*(h_no-c));
+		if(mmatches > 0.5){
+			vc = c+(highlight*-1.0*(h_yes-c));
+		} else {
+			vc = c;
+		}
 	}
-
-	if(mmatches > 0.5){
-		vc = h_yes;	
-	}
-
 	
 	if (state < 1.0){
 	  gl_Position = projectionMatrix *
@@ -361,9 +364,6 @@ baubleWorker.onmessage = function(oEvent){
 			minv < hsv[2] && maxv > hsv[2]
 		? 1 : 0;
 
-		// debugger;
-
-		// ms[i] = Math.random()
 	};
 
 
@@ -556,9 +556,17 @@ function step4(){
 
 }
 
+// highlight our own
+function step5(){
+	(new TWEEN.Tween(uniforms.highlight)
+		.to({value: -1}, 2000)
+		.easing(TWEEN.Easing.Exponential.InOut)
+	).start();
+}
+
 
 // move back to the image
-function step5(){
+function step6(){
 	TWEEN.removeAll();
 
 	(new TWEEN.Tween(cylinder.position)
@@ -566,10 +574,10 @@ function step5(){
 		.easing(TWEEN.Easing.Exponential.Out)
 	).start();
 
-	(new TWEEN.Tween(uniforms.highlight)
-		.to({value: 0}, 3000)
-		.easing(TWEEN.Easing.Exponential.InOut)
-	).start();
+	// (new TWEEN.Tween(uniforms.highlight)
+	// 	.to({value: 0}, 3000)
+	// 	.easing(TWEEN.Easing.Exponential.InOut)
+	// ).start();
 
 	(new TWEEN.Tween(uniforms.state)
 		.to({value: 0}, 7000)
@@ -598,6 +606,8 @@ function step5(){
 
 
 }
+
+
 
 	</script>
 </body>
