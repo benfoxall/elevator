@@ -12,17 +12,42 @@
 
 uniform float state;
 
+// flat image
 attribute vec3 custompositiona;
+
+// rgb cube
 attribute vec3 custompositionb;
+
+// hsv cylinder
+attribute vec3 custompositionc;
 
 attribute vec4 c;
 varying vec4 vc;
 
 void main() {
   vc = c;
-  gl_Position = projectionMatrix *
-                modelViewMatrix *
-                vec4(position * (custompositiona+(state*(custompositionb - custompositiona))),1.0);
+	if (state < 1.0){
+	  gl_Position = projectionMatrix *
+	                modelViewMatrix *
+	                vec4(position * (custompositiona+(state*(custompositionb - custompositiona))),1.0);	
+  } else {
+
+	  gl_Position = projectionMatrix *
+	                modelViewMatrix *
+	                vec4(position * (custompositionb+((state-1.0)*(custompositionc - custompositionb))),1.0);	
+
+  }
+
+ //  }
+  // } else {
+  	// gl_Position = projectionMatrix *
+	  //               modelViewMatrix *
+	  //               vec4(position * (
+	  //               	state < 1 ? 
+	  //               	custompositiona+(state*(custompositionb - custompositiona)) :
+	  //               	custompositionb+((state-1)*(custompositionc - custompositionb)
+	  //               )),1.0);	
+  // }
 }
 </script>
 <script type="x-shader/x-fragment" id="fragmentshader">
@@ -37,6 +62,66 @@ void main() {
 <script type="text/javascript" src="/tweenjs/build/tween.min.js"></script>
 <script type="text/javascript">
 
+
+
+function rgb_hsv(r, g, b){
+  var h, s, v, cmax, cmin, delta;
+
+  // Cmax = max(R', G', B')
+  // Cmin = min(R', G', B')
+  cmax = Math.max(r,g,b);
+  cmin = Math.min(r,g,b);
+
+  // console.log(cmax, cmin)
+
+  // Î” = Cmax - Cmin
+  delta = cmax - cmin;
+
+  // Hue calculation:
+  if(cmax == r){
+    h = 60 * (((g - b) / delta) % 6)
+  } else if(cmax == g){
+    h = 60 * (((b - r) / delta) + 2)
+  } else if(cmax == b){
+    h = 60 * (((r - g) / delta) + 4)
+  }
+
+  // Saturation calculation:
+
+  if(delta == 0){
+    s = 0;
+  } else {
+    s = (delta*255)/cmax;
+  }
+
+  // Value calculation:
+  // V = Cmax
+  v = cmax;
+
+  // 0 --> 255
+  // h = (((h || 0)+360) % 360 ) / 1.411764 
+
+  // 0 --> 2PI
+  h = (((h || 0)+360) % 360 ) * ((Math.PI*2)/360);
+
+  return [h, s, v]
+
+}
+
+
+// plots hsv into 255/255 cylinder
+function hsv_3d(hsv){
+	var x,y,z, h = hsv[0], s = hsv[1], v = hsv[2];
+
+	x = Math.cos(h) * s * 0.5;
+	y = v;
+	z = Math.sin(h) * s * 0.5;
+
+	return [x,y-127,z];
+}
+
+
+
 // particles
 attributes = {
 	c:{
@@ -46,12 +131,14 @@ attributes = {
 
 	custompositiona: { type: 'v3', value: [] },
 	custompositionb: { type: 'v3', value: [] },
+	custompositionc: { type: 'v3', value: [] },
 
 };
 
 uniforms = {
 	// state: 0.0
 	state: { type: "f", value: 0.0 },
+	// hsvness: { type: "f", value: 0.0 },
 };
 
 var shaderMaterial = new THREE.ShaderMaterial( {
@@ -73,7 +160,7 @@ var height = 540;//window.innerHeight;
 
 var renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(width, height);
-renderer.setClearColor(0xffffff, 1);
+renderer.setClearColor(0xeeeeee, 1);
 document.body.appendChild(renderer.domElement);
 
 
@@ -102,6 +189,9 @@ function start(data){
 
 
 			attributes.custompositionb.value.push(new THREE.Vector3(data.data[i]-127,data.data[i+1]-127,data.data[i+2]-127));
+
+			var hsv = hsv_3d(rgb_hsv(data.data[i], data.data[i+1], data.data[i+2]));
+			attributes.custompositionc.value.push(new THREE.Vector3(hsv[0],hsv[1],hsv[2]));
 
 
 			attributes.c.value.push(new THREE.Color(data.data[i]/255,data.data[i+1]/255,data.data[i+2]/255));
@@ -167,8 +257,8 @@ function start(data){
 
 
 
-var cube = new THREE.BoxGeometry( 255, 255, 255 );
-var cubematerial = new THREE.MeshBasicMaterial( {wireframe: false, color: 0x000000, opacity: 0.2, transparent:true} );
+var cube = new THREE.BoxGeometry( 260, 260, 260 );
+var cubematerial = new THREE.MeshBasicMaterial( {wireframe: false, color: 0x000000, opacity: 0.1, transparent:true} );
 var cube = new THREE.Mesh( cube, cubematerial );
 
 
@@ -178,6 +268,14 @@ rgbcube.add( cube );
    scene.add(rgbcube)
 
 
+
+
+var cgeometry = new THREE.CylinderGeometry( 127, 127, 255, 32, 4);
+var cmaterial = new THREE.MeshBasicMaterial( {wireframe: false, color: 0x000000, opacity: 0.1, transparent:true } );
+cylinder = new THREE.Mesh( cgeometry, cmaterial );
+scene.add( cylinder );
+cylinder.position.z = 200
+cylinder.position.y = -500
 
 
 
@@ -266,7 +364,7 @@ function step1(){
 
 var autoRotate;
 
-// morph the pixels into the space
+// morph the pixels into the rgb space
 function step2(){
 
 	// transition image to rgb
@@ -289,6 +387,26 @@ function step2(){
 		})
 	).start();
 
+}
+
+
+// move to hsv
+function step3(){
+	(new TWEEN.Tween(uniforms.state)
+		.to({value: 2}, 5000)
+		.easing(TWEEN.Easing.Exponential.InOut)
+	).start();
+
+
+(new TWEEN.Tween(rgbcube.position)
+		.to({y: 1000}, 3000)
+		.easing(TWEEN.Easing.Quadratic.Out)
+	).start();
+
+	(new TWEEN.Tween(cylinder.position)
+		.to({y: 0}, 5000)
+		.easing(TWEEN.Easing.Exponential.InOut)
+	).start();
 }
 
 
