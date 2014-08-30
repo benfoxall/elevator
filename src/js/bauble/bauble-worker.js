@@ -52,7 +52,11 @@ function calibrate(data){
   var image   = data.image,
       windows = data.windows,
       width   = image.width,
-      height  = image.height;
+      height  = image.height,
+      cx      = data.cx,
+      cy      = data.cy,
+      cr      = data.cr,
+      circle  = typeof(cx) !== 'undefined';
 
 
   // buckets for the h,s,v values
@@ -60,7 +64,6 @@ function calibrate(data){
   var buckets = new Uint16Array(255*6);
 
   var maxh, minh, maxs, mins, maxv, minv;
-
 
   // calibration window
   var cSize = Math.min(height,width) / 5,
@@ -81,7 +84,12 @@ function calibrate(data){
 
         rgb_hsv(image.data,i);
 
-        bucketOffset = x > xmin && x < xmax && y > ymin && y < ymax ? 0 : 3 * 255;
+        if(circle){
+          bucketOffset = Math.sqrt(Math.pow(x-cx,2) + Math.pow(y-cy,2)) < cr ? 0 : 3 * 255;
+          // if(Math.sqrt(Math.pow(x-cx,2) + Math.pow(y-cy,2)) < cr) console.log('.');
+        } else {
+          bucketOffset = x > xmin && x < xmax && y > ymin && y < ymax ? 0 : 3 * 255;  
+        }
 
         buckets[image.data[i] + bucketOffset]++
         buckets[image.data[i+1] + 255 + bucketOffset]++
