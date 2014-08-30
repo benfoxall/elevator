@@ -26,6 +26,9 @@ attribute vec3 custompositionb;
 // hsv cylinder
 attribute vec3 custompositionc;
 
+
+attribute float mmatches;
+
 attribute vec4 c;
 varying vec4 vc;
 
@@ -41,6 +44,10 @@ void main() {
     vc = c+(highlight*(h_yes-c));
 	} else {
     vc = c+(highlight*(h_no-c));
+	}
+
+	if(mmatches > 0.5){
+		vc = h_yes;	
 	}
 
 	
@@ -66,6 +73,8 @@ void main() {
 }
 </script>
 
+
+<!-- <script type="text/javascript" src="/js/bauble/bauble.js"></script> -->
 <script type="text/javascript" src="/three.js/three.js"></script>
 <script type="text/javascript" src="/tweenjs/build/tween.min.js"></script>
 <script type="text/javascript">
@@ -141,6 +150,11 @@ attributes = {
 	custompositionb: { type: 'v3', value: [] },
 	custompositionc: { type: 'v3', value: [] },
 
+	mmatches: {
+		type: 'f',
+		value: []
+	}
+
 };
 
 uniforms = {
@@ -210,6 +224,8 @@ function start(data){
 
 			attributes.c.value.push(new THREE.Color(data.data[i]/255,data.data[i+1]/255,data.data[i+2]/255));
 
+			// whether it mmatches the thresholds
+			attributes.mmatches.value.push(0);
 
 		}
 	}
@@ -303,11 +319,7 @@ cylinder.position.y = -500
 	function render() {
 	  requestAnimationFrame(render);
 
-	  // rotation
-	  // if(autoRotate){
-  		rgbcube.rotation.y = particles.rotation.y = _spin.y;
-	  // }
-		  
+		rgbcube.rotation.y = particles.rotation.y = _spin.y;
 
 	  renderer.render(scene, camera);
 	  TWEEN.update();
@@ -317,13 +329,78 @@ cylinder.position.y = -500
 
 }
 
+function three_rgb(c){
+	return [c.r*255, c.g*255, c.b*255];
+}
 
-// function highlight(x,y,r){
+
+var baubleWorker = new Worker("js/bauble/bauble-worker.js");
+
+baubleWorker.onmessage = function(oEvent){
+	console.log("BAUBLE> ", oEvent.data);
 
 
-// }
+	var minh = oEvent.data.windows[0],
+			maxh = oEvent.data.windows[1],
+			mins = oEvent.data.windows[2],
+			maxs = oEvent.data.windows[3],
+			minv = oEvent.data.windows[4],
+			maxv = oEvent.data.windows[5];
 
-var img = new Image;
+	// populate all
+	var ms = attributes.mmatches.value, colors = attributes.c.value, c, hsv;
+	for (var i = ms.length - 1; i >= 0; i--) {
+		hsv = rgb_hsv.apply(this,three_rgb(colors[i]));
+
+		ms[i] = 
+			(minh < maxh ? 
+				hsv[0] > minh || hsv[0] < maxh :
+				hsv[0] < minh && hsv[0] > maxh
+			) &&
+			mins < hsv[1] && maxs > hsv[1]  &&
+			minv < hsv[2] && maxv > hsv[2]
+		? 1 : 0;
+
+		// debugger;
+
+		// ms[i] = Math.random()
+	};
+
+
+	attributes.mmatches.needsUpdate = true
+
+	console.log("done")
+
+	// debugger;
+
+}
+
+// highlight a circle on the points
+function highlight(x,y,r){
+	uniforms.centre.value = new THREE.Vector3(x - (960/2), (540/2) - y, 0);
+	uniforms.radius.value = r;
+
+	// compute the bounds
+
+	console.log("sending", [x,y,r])
+
+		baubleWorker.postMessage({
+        type:'calibrate',
+
+        image: cdata,
+        // calibration_size: Math.min(this.height,this.width) / 5,
+        // calibration_circle: [x,y,r],
+        cx: x,
+        cy: y,
+        cr: r,
+        windows: [15,30,30]// TODO MAKE TAILORABLE
+
+      },[cdata.data.buffer]);
+
+
+}
+
+var img = new Image, cdata;
 img.onload = function(){
 	var c = document.createElement('canvas');
 	c.width = 200;//img.width;
@@ -336,13 +413,14 @@ img.onload = function(){
 	ctx.drawImage(img,0,0);
 
 	var data = ctx.getImageData(0,0,c.width,c.height);
+	cdata = ctx.getImageData(0,0,c.width,c.height); // for calibrating stuff
 
 	start(data);
 
 
 	// highlight pixels as being active
 	// setTimeout(function(){
-		// highlight(800, 200, 95)	
+	highlight(800, 200, 95)
 	// })
 	
 }
@@ -388,8 +466,6 @@ function step1(){
 		.easing(TWEEN.Easing.Quadratic.Out)
 	).start();
 }
-
-var autoRotate;
 
 // morph the pixels into the rgb space
 function step2(){
