@@ -11,6 +11,11 @@
 <script type="x-shader/x-vertex" id="vertexshader">
 
 uniform float state;
+uniform float highlight;
+
+uniform float radius;
+uniform vec3  centre;
+
 
 // flat image
 attribute vec3 custompositiona;
@@ -24,8 +29,21 @@ attribute vec3 custompositionc;
 attribute vec4 c;
 varying vec4 vc;
 
+bool active;
+
+vec4 h_yes = vec4(1,0,0.7,0.8);
+vec4 h_no  = vec4(0.0,0.0,0.0,0.1);
+
 void main() {
-  vc = c;
+
+
+	if(distance(centre, custompositiona) < radius){
+    vc = c+(highlight*(h_yes-c));
+	} else {
+    vc = c+(highlight*(h_no-c));
+	}
+
+	
 	if (state < 1.0){
 	  gl_Position = projectionMatrix *
 	                modelViewMatrix *
@@ -38,16 +56,6 @@ void main() {
 
   }
 
- //  }
-  // } else {
-  	// gl_Position = projectionMatrix *
-	  //               modelViewMatrix *
-	  //               vec4(position * (
-	  //               	state < 1 ? 
-	  //               	custompositiona+(state*(custompositionb - custompositiona)) :
-	  //               	custompositionb+((state-1)*(custompositionc - custompositionb)
-	  //               )),1.0);	
-  // }
 }
 </script>
 <script type="x-shader/x-fragment" id="fragmentshader">
@@ -139,6 +147,12 @@ uniforms = {
 	// state: 0.0
 	state: { type: "f", value: 0.0 },
 	// hsvness: { type: "f", value: 0.0 },
+
+	centre: { type: 'v3', value: new THREE.Vector3(795 - (960/2), (540/2) - 180, 0)},
+	radius: { type: "f", value: 95.0},
+
+	highlight: { type: "f", value: 0.0 }
+
 };
 
 var shaderMaterial = new THREE.ShaderMaterial( {
@@ -150,7 +164,7 @@ var shaderMaterial = new THREE.ShaderMaterial( {
 
 	blending: 		THREE.NormalBlending,
 	depthTest: 		true,
-	transparent:	false,
+	transparent:	true,
 	
 });
 
@@ -290,9 +304,9 @@ cylinder.position.y = -500
 	  requestAnimationFrame(render);
 
 	  // rotation
-	  if(autoRotate){
-  		rgbcube.rotation.y = particles.rotation.y += 0.002;
-	  }
+	  // if(autoRotate){
+  		rgbcube.rotation.y = particles.rotation.y = _spin.y;
+	  // }
 		  
 
 	  renderer.render(scene, camera);
@@ -302,6 +316,12 @@ cylinder.position.y = -500
 	render()
 
 }
+
+
+// function highlight(x,y,r){
+
+
+// }
 
 var img = new Image;
 img.onload = function(){
@@ -318,6 +338,13 @@ img.onload = function(){
 	var data = ctx.getImageData(0,0,c.width,c.height);
 
 	start(data);
+
+
+	// highlight pixels as being active
+	// setTimeout(function(){
+		// highlight(800, 200, 95)	
+	// })
+	
 }
 img.src='img/example-3.png'
 
@@ -325,7 +352,7 @@ img.src='img/example-3.png'
 var x = {};
 
 function flip(){
-	var tween = new TWEEN.Tween(uniforms.state)
+	var tween = new TWEEN.Tween(uniforms.highlight)
 		.to({value: 1}, 5000)
 		.easing(TWEEN.Easing.Exponential.InOut)
 		// .delay(200)
@@ -334,7 +361,7 @@ function flip(){
 }
 
 function flop(){
-	var tween = new TWEEN.Tween(uniforms.state)
+	var tween = new TWEEN.Tween(uniforms.highlight)
 		.to({value: 0}, 5000)
 		.easing(TWEEN.Easing.Exponential.InOut)
 		// .delay(200)
@@ -349,7 +376,7 @@ function step1(){
 
 	rgbcube.position.z = 200;
 	rgbcube.position.y = -500;
-	rgbcube.rotation.y = 0;
+	rgbcube.rotation.y = Math.PI*2;
 
 	(new TWEEN.Tween(rgbcube.position)
 		.to({y: 0}, 2000)
@@ -357,7 +384,7 @@ function step1(){
 	).start();
 
 	(new TWEEN.Tween(rgbcube.rotation)
-		.to({y: (2*Math.PI) + 0.3, x: 0.2}, 5000)
+		.to({y: 0.3, x: 0.2}, 5000)
 		.easing(TWEEN.Easing.Quadratic.Out)
 	).start();
 }
@@ -387,18 +414,55 @@ function step2(){
 		})
 	).start();
 
+	(new TWEEN.Tween(_spin)
+		.to({y:0.6}, 5000)
+		.easing(TWEEN.Easing.Quadratic.InOut)
+		.chain(new TWEEN.Tween(_spin)
+			.to({y:-0.6-(Math.PI)}, 8000)
+			.easing(TWEEN.Easing.Sinusoidal.InOut)
+		)
+	).start()
+
 }
 
 
-// move to hsv
+// highlight matched pixels
 function step3(){
-	(new TWEEN.Tween(uniforms.state)
-		.to({value: 2}, 5000)
+
+	(new TWEEN.Tween(uniforms.highlight)
+		.to({value: 1}, 5000)
 		.easing(TWEEN.Easing.Exponential.InOut)
 	).start();
 
+	// (new TWEEN.Tween(_spin)
+	// 		.to({y:2}, 7000)
+	// 		.easing(TWEEN.Easing.Sinusoidal.InOut)
+	// ).start()
 
-(new TWEEN.Tween(rgbcube.position)
+}
+
+var _spin = {y:0};
+
+// move to hsv, then highlight
+function step4(){
+
+	(new TWEEN.Tween(uniforms.highlight)
+		.to({value: 0}, 2000)
+		.easing(TWEEN.Easing.Exponential.InOut)
+	).start();
+
+	(new TWEEN.Tween(uniforms.state)
+		.to({value: 2}, 5000)
+		.easing(TWEEN.Easing.Exponential.InOut)
+		.chain(
+			new TWEEN.Tween(uniforms.highlight)
+					.to({value: 1}, 2000)
+					.easing(TWEEN.Easing.Exponential.InOut)
+		)
+	).start();
+
+
+	(new TWEEN.Tween(rgbcube.position)
 		.to({y: 1000}, 3000)
 		.easing(TWEEN.Easing.Quadratic.Out)
 	).start();
@@ -407,8 +471,57 @@ function step3(){
 		.to({y: 0}, 5000)
 		.easing(TWEEN.Easing.Exponential.InOut)
 	).start();
+
+
+	(new TWEEN.Tween(_spin)
+			.to({y:'+' + Math.PI*4}, 20000)
+			.easing(TWEEN.Easing.Sinusoidal.InOut)
+	).start()
+
 }
 
+
+// move back to the image
+function step5(){
+	TWEEN.removeAll();
+
+	(new TWEEN.Tween(cylinder.position)
+		.to({y: 500}, 5000)
+		.easing(TWEEN.Easing.Exponential.Out)
+	).start();
+
+	(new TWEEN.Tween(uniforms.highlight)
+		.to({value: 0}, 3000)
+		.easing(TWEEN.Easing.Exponential.InOut)
+	).start();
+
+	(new TWEEN.Tween(uniforms.state)
+		.to({value: 0}, 7000)
+		.easing(TWEEN.Easing.Exponential.InOut)
+	).start();
+
+
+	(new TWEEN.Tween(particles.rotation)
+		.to({x: 0}, 5000)
+		.easing(TWEEN.Easing.Exponential.InOut)
+	).start();
+
+
+	(new TWEEN.Tween(particles.position)
+		.to({z: 0}, 5000)
+		.easing(TWEEN.Easing.Exponential.InOut)
+	).start();
+
+
+	_spin.y = _spin.y % (Math.PI*2);
+
+	(new TWEEN.Tween(_spin)
+			.to({y:0}, 5000)
+			.easing(TWEEN.Easing.Sinusoidal.InOut)
+	).start()
+
+
+}
 
 	</script>
 </body>
