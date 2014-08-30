@@ -4,6 +4,9 @@
 	<title>color plot</title>
 	<style type="text/css">
 		canvas{outline: 1px solid blue;}
+		body{
+			background:#eeeeee;
+		}
 	</style>
 </head>
 <body>
@@ -82,6 +85,8 @@ void main() {
 <script type="text/javascript" src="/tweenjs/build/tween.min.js"></script>
 <script type="text/javascript">
 
+
+var killed = false;
 
 
 function rgb_hsv(r, g, b){
@@ -320,6 +325,8 @@ cylinder.position.y = -500
 
 
 	function render() {
+		if(killed) return;
+
 	  requestAnimationFrame(render);
 
 		rgbcube.rotation.y = particles.rotation.y = _spin.y;
@@ -366,12 +373,11 @@ baubleWorker.onmessage = function(oEvent){
 
 	};
 
-
 	attributes.mmatches.needsUpdate = true
 
 	console.log("done")
 
-	// debugger;
+	// READY TO DO STUFF
 
 }
 
@@ -417,37 +423,15 @@ img.onload = function(){
 
 	start(data);
 
-
 	// highlight pixels as being active
-	// setTimeout(function(){
 	highlight(800, 200, 95)
-	// })
 	
 }
 img.src='img/example-3.png'
 
 
-var x = {};
+var _spin = {y:0};
 
-function flip(){
-	var tween = new TWEEN.Tween(uniforms.highlight)
-		.to({value: 1}, 5000)
-		.easing(TWEEN.Easing.Exponential.InOut)
-		// .delay(200)
-		.onComplete(flop);
-	tween.start();
-}
-
-function flop(){
-	var tween = new TWEEN.Tween(uniforms.highlight)
-		.to({value: 0}, 5000)
-		.easing(TWEEN.Easing.Exponential.InOut)
-		// .delay(200)
-		.onComplete(flip);
-	tween.start();
-}
-
-// flip();
 
 // show rgb
 function step1(){
@@ -498,7 +482,6 @@ function step2(){
 			.easing(TWEEN.Easing.Sinusoidal.InOut)
 		)
 	).start()
-
 }
 
 
@@ -514,10 +497,7 @@ function step3(){
 	// 		.to({y:2}, 7000)
 	// 		.easing(TWEEN.Easing.Sinusoidal.InOut)
 	// ).start()
-
 }
-
-var _spin = {y:0};
 
 // move to hsv, then highlight
 function step4(){
@@ -553,7 +533,6 @@ function step4(){
 			.to({y:'+' + Math.PI*4}, 20000)
 			.easing(TWEEN.Easing.Sinusoidal.InOut)
 	).start()
-
 }
 
 // highlight our own
@@ -603,10 +582,20 @@ function step6(){
 			.to({y:0}, 5000)
 			.easing(TWEEN.Easing.Sinusoidal.InOut)
 	).start()
-
-
 }
 
+
+
+function destroy(){
+	killed = true;
+
+	// remove some of the bigger things
+	attributes.custompositiona.value = [];
+	attributes.custompositionb.value = [];
+	attributes.custompositionc.value = [];
+	attributes.matches.value = [];
+
+}
 
 
 	</script>

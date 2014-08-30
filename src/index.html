@@ -26,25 +26,106 @@
 			position: absolute;
 			cursor: crosshair;
 		}
-		#t{
+
+		/* for making sure the slides are at the right size */
+		#first{ 
 			width:960px;
 			height:540px;
-			background: red;
+			box-shadow: #aaa 0px 0px 15px;
+		}
+		#first h1{
+			margin:0;
+			padding-top:100px;
 		}
 		</style>
 	</head>
 	<body>
 
+
+	<script type="x-shader/x-vertex" id="vertexshader">
+
+	uniform float state;
+	uniform float highlight;
+
+	uniform float radius;
+	uniform vec3  centre;
+
+
+	// flat image
+	attribute vec3 custompositiona;
+
+	// rgb cube
+	attribute vec3 custompositionb;
+
+	// hsv cylinder
+	attribute vec3 custompositionc;
+
+
+	attribute float mmatches;
+
+	attribute vec4 c;
+	varying vec4 vc;
+
+	bool active;
+
+	vec4 h_yes = vec4(1,0,0.7,0.8);
+	vec4 h_no  = vec4(0.0,0.0,0.0,0.1);
+
+	void main() {
+
+		// highlight the circle
+		if(highlight > 0.0){
+			if(distance(centre, custompositiona) < radius){
+		    vc = c+(highlight*(h_yes-c));
+			} else {
+		    vc = c+(highlight*(h_no-c));
+			}	
+		} else {
+			if(mmatches > 0.5){
+				vc = c+(highlight*-1.0*(h_yes-c));
+			} else {
+				vc = c;
+			}
+		}
+		
+		if (state < 1.0){
+		  gl_Position = projectionMatrix *
+		                modelViewMatrix *
+		                vec4(position * (custompositiona+(state*(custompositionb - custompositiona))),1.0);	
+	  } else {
+
+		  gl_Position = projectionMatrix *
+		                modelViewMatrix *
+		                vec4(position * (custompositionb+((state-1.0)*(custompositionc - custompositionb))),1.0);	
+
+	  }
+
+	}
+	</script>
+	<script type="x-shader/x-fragment" id="fragmentshader">
+	varying vec4 vc;
+
+	void main() {
+		gl_FragColor = vec4(vc);
+	}
+	</script>
+
+
+
+
 		<div class="reveal">
 			<div class="slides">
 				<section>
-					<div id="t"></div>
+					<div id="first">
+						<h1>webpage</h1>
+					</div>
 				</section>
-				<section>
+
+				<!--section>
 					<div class="waves-effect waves-icon icon-button">
 						<i class="icon-camera"></i>
 					</div>
-				</section>
+				</section-->
 
 				<section id="getPhoto">
 					<video width="960" height="540"></video>
@@ -55,21 +136,25 @@
 					<img id="photo" src="img/example-1.png" />
 				</section>
 
+
+				<section id="vis"></section>
+
 				<section>
 					<canvas id="colorPlot" width="500" height="500"></canvas>
 				</section>
 
-				<section>
+<!-- 				<section>
 					<div class="waves-effect waves-icon icon-button">
 						<i class="icon-videocam"></i>
 					</div>
-				</section>
+				</section> -->
 			</div>
 		</div>
 
 		<script src="lib/js/head.min.js"></script>
 		<script src="js/reveal.min.js"></script>
-		<script src="/Waves/src/js/waves.js"></script>
+		<!--script src="/Waves/src/js/waves.js"></script-->
+
 
 		<script>
 			Reveal.initialize({
@@ -91,7 +176,7 @@
 				]
 			});
 
-			Waves.displayEffect();
+			// Waves.displayEffect();
 
 
 			function advance(){
@@ -121,7 +206,10 @@
 		</script>
 
 
-		<script src="/sylvester/sylvester.js"></script>
+		<script src="three.js/three.js"></script>
+		<script src="tweenjs/build/tween.min.js"></script>
+		<script src="sylvester/sylvester.js"></script>
+		<script src="lib/js/dynamic_slide.js"></script>
 		<script src="js/elevator.js"></script>
 		<script src="script.js"></script>
 	</body>
