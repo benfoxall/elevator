@@ -6,6 +6,9 @@ navigator.getMedia = ( navigator.getUserMedia ||
 var URL = window.URL || window.webkitURL;
 
 
+// var mediaStream;
+
+
 var constraints = {
   //qvga
   video: {
@@ -693,7 +696,7 @@ function destroy(){
   attributes.custompositiona.value = [];
   attributes.custompositionb.value = [];
   attributes.custompositionc.value = [];
-  attributes.matches.value = [];
+  attributes.mmatches.value = [];
 
 }
 
@@ -716,6 +719,14 @@ dyn_slide.addEventListener('shown', function(){
 dyn_slide.addEventListener('hidden', function(){
   console.log("hidden");
   // self.stop(); console.log("stopped")
+
+  destroy();
+
+  var video = document.querySelector('video');
+
+  document.getElementById('bauble').appendChild(video);
+
+  video.play();
 });
 
 dyn_slide.fragments([
