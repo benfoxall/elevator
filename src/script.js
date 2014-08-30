@@ -486,7 +486,7 @@ function highlight(x,y,r){
         cx: x,
         cy: y,
         cr: r,
-        windows: [15,30,30]// TODO MAKE TAILORABLE
+        windows: [15,30,60]// TODO MAKE TAILORABLE
 
       },[cdata.data.buffer]);
 
