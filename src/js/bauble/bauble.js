@@ -17,9 +17,14 @@
     this.worker = new Worker(this.options.worker || "vr-worker.js");
     this.worker.onmessage = this._workerHandler.bind(this);
 
-    this.video = document.createElement('video');
-    this.video.autoplay = true;
-    this.video.style.display = 'none';
+    if(options.video){
+      this.video = options.video;
+      this.preexistingVideo = true;
+    } else {    
+      this.video = document.createElement('video');
+      this.video.autoplay = true;
+      this.video.style.display = 'none'; 
+    }
 
     this.canvas = document.createElement('canvas');
     this.ctx = this.canvas.getContext('2d');
@@ -29,6 +34,17 @@
 
     this.lastPoint = null;
 
+  }
+
+  Bauble.prototype.setWindow = function(_maxh, _minh, _maxs, _mins, _maxv, _minv){
+    maxh = _maxh;
+    minh = _minh;
+    maxs = _maxs;
+    mins = _mins;
+    maxv = _maxv;
+    minv = _minv;
+
+    return this;
   }
 
   Bauble.prototype.getUserMedia = function(){
@@ -59,8 +75,8 @@
 
       this.ctx.setStrokeColor('rgba(0,255,0,0.9)');
 
-      this.ctx.translate(this.width, 0);
-      this.ctx.scale(-1, 1);
+      // this.ctx.translate(this.width, 0);
+      // this.ctx.scale(-1, 1);
 
       this.emit('video-ready')
 
@@ -238,7 +254,8 @@
   Bauble.prototype.attachTo = function(selector){
     var target = document.querySelector(selector);
 
-    target.appendChild(this.video);
+    if(!this.preexistingVideo) 
+      target.appendChild(this.video);
     target.appendChild(this.canvas);
 
     return this;

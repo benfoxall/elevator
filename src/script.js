@@ -433,19 +433,21 @@ function three_rgb(c){
   return [c.r*255, c.g*255, c.b*255];
 }
 
+var workerUrl = "js/bauble/bauble-worker.js";
+var baubleWorker = new Worker(workerUrl);
 
-var baubleWorker = new Worker("js/bauble/bauble-worker.js");
+var minh, maxh, mins, maxs, minv, maxv;
 
 baubleWorker.onmessage = function(oEvent){
   console.log("BAUBLE> ", oEvent.data);
 
 
-  var minh = oEvent.data.windows[0],
-      maxh = oEvent.data.windows[1],
-      mins = oEvent.data.windows[2],
-      maxs = oEvent.data.windows[3],
-      minv = oEvent.data.windows[4],
-      maxv = oEvent.data.windows[5];
+  minh = oEvent.data.windows[0],
+  maxh = oEvent.data.windows[1],
+  mins = oEvent.data.windows[2],
+  maxs = oEvent.data.windows[3],
+  minv = oEvent.data.windows[4],
+  maxv = oEvent.data.windows[5];
 
   // populate all
   var ms = attributes.mmatches.value, colors = attributes.c.value, c, hsv;
@@ -722,11 +724,11 @@ dyn_slide.addEventListener('hidden', function(){
 
   destroy();
 
-  var video = document.querySelector('video');
+  // var video = document.querySelector('video');
 
-  document.getElementById('bauble').appendChild(video);
+  // document.getElementById('bauble').appendChild(video);
 
-  video.play();
+  // video.play();
 });
 
 dyn_slide.fragments([
@@ -747,6 +749,52 @@ dyn_slide.fragments([
 
 
 
+
+// BAUBLE
+
+var baubleSlide = document.getElementById('bauble');
+var bauble;
+
+var dyn_bauble_slide = new DynamicSlide(baubleSlide);
+
+dyn_bauble_slide.addEventListener('shown', function(){
+  console.log("bauble shown");
+
+  var video = document.querySelector('video');
+
+  video.play();
+
+
+  bauble = new Bauble({worker:workerUrl, video: video})
+
+    bauble
+      .setCalibrating(false)
+      .setWindow(maxh, minh, maxs, mins, maxv, minv)
+      .attachTo('#bauble')
+      .on('point', function(x,y){
+        // do something awesome!!
+        // console.log(x);
+        // console.log('yay', x,y)
+      });
+
+  bauble._waitForVideo();
+
+  // click #calibrate_button to mark as calibrated
+  // calibrate_button.onclick = function(){
+  //   bauble.setCalibrating(false);
+  // }
+  // self.state_intro();
+})
+
+
+dyn_slide.addEventListener('hidden', function(){
+
+  var video = document.querySelector('video');
+
+  video.stop();
+
+
+});
 
 
 
