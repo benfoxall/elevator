@@ -131,26 +131,18 @@
 					</div>
 				</section>
 
-				<!--section>
-					<div class="waves-effect waves-icon icon-button">
-						<i class="icon-camera"></i>
-					</div>
-				</section-->
-
 				<section id="getPhoto">
 					<video width="960" height="540"></video>
 				</section>
 
 				<section>
 					<canvas id="circleSelect"></canvas>
-					<img id="photo" src="img/example-1.png" />
+					<img id="photo" src="img/example-3.png" />
 				</section>
-
 
 				<section id="vis"></section>
 
 				<section id="bauble"></section>
-
 
 				<section id="me">
 					<h2>
@@ -159,23 +151,11 @@
 					<img src="img/wo.png" width="200" />
 				</section>
 
-
-<!-- 				<section>
-					<canvas id="colorPlot" width="500" height="500"></canvas>
-				</section> -->
-
-<!-- 				<section>
-					<div class="waves-effect waves-icon icon-button">
-						<i class="icon-videocam"></i>
-					</div>
-				</section> -->
 			</div>
 		</div>
 
 		<script src="lib/js/head.min.js"></script>
 		<script src="js/reveal.min.js"></script>
-		<!--script src="/Waves/src/js/waves.js"></script-->
-
 
 		<script>
 			Reveal.initialize({
@@ -196,32 +176,6 @@
 					// { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
 				]
 			});
-
-			// Waves.displayEffect();
-
-
-			function advance(){
-				var t = this;
-				setTimeout(function(){
-					t.style.webkitTransform = 'scale(0)';
-					setTimeout(function(){
-						Reveal.right();
-						t.style.webkitTransform = 'scale(1)';
-					},500)
-				},300);
-			}
-		
-			Array.prototype.forEach.call(
-				document.querySelectorAll('.waves-effect'), 
-				function(i) {
-
-					if (window.Touch) i.addEventListener('touchend', advance, false);
-
-					i.addEventListener('mouseup', advance, false);
-				}
-			);
-
-
 
 
 		</script>
