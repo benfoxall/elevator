@@ -753,7 +753,8 @@ dyn_slide.fragments([
 // BAUBLE
 
 var baubleSlide = document.getElementById('bauble');
-var bauble;
+var recog;
+var drawfn = function(p, prior){};
 
 var dyn_bauble_slide = new DynamicSlide(baubleSlide);
 
@@ -764,20 +765,28 @@ dyn_bauble_slide.addEventListener('shown', function(){
 
   video.play();
 
+  var priorpoint;
 
-  bauble = new Bauble({worker:workerUrl, video: video})
 
-    bauble
+  recog = new Bauble({worker:workerUrl, video: video})
+
+    recog
       .setCalibrating(false)
       .setWindow(maxh, minh, maxs, mins, maxv, minv)
       .attachTo('#bauble')
       .on('point', function(x,y){
         // do something awesome!!
         // console.log(x);
-        // console.log('yay', x,y)
+    // console.log('yay', x,y)
+          if(x && y){
+            drawfn([x,y], priorpoint)
+            priorpoint = [x,y]
+          } else {
+            priorpoint = null;
+          }
       });
 
-  bauble._waitForVideo();
+  recog._waitForVideo();
 
   // click #calibrate_button to mark as calibrated
   // calibrate_button.onclick = function(){
@@ -787,7 +796,7 @@ dyn_bauble_slide.addEventListener('shown', function(){
 })
 
 
-dyn_slide.addEventListener('hidden', function(){
+dyn_bauble_slide.addEventListener('hidden', function(){
 
   var video = document.querySelector('video');
 
@@ -795,6 +804,141 @@ dyn_slide.addEventListener('hidden', function(){
 
 
 });
+
+
+
+dyn_bauble_slide.fragments([
+  function(){
+    drawfn = function(current, prior){
+      with(recog.pctx){
+        clearRect(0,0,recog.canvas.width,recog.canvas.height);
+
+        strokeStyle = '#08f'
+        lineWidth = 10
+        beginPath();
+        moveTo(current[0] - 20,current[1] - 20);
+        lineTo(current[0] + 20,current[1] + 20);
+
+        moveTo(current[0] - 20,current[1] + 20);
+        lineTo(current[0] + 20,current[1] - 20);
+
+        stroke();
+      }
+    }
+  },
+
+  function(){
+    recog.pctx.clearRect(0,0,recog.canvas.width,recog.canvas.height);
+
+    recog.pctx.fillStyle = 'rgba(255,255,255,0.7)';
+    recog.pctx.fillRect(0,0,recog.canvas.width,recog.canvas.height);
+
+    recog.canvas.style.webkitTransition = ''
+
+    // -webkit-transition: -webkit-transform 1s;
+
+    drawfn = function(current, prior){
+      with(recog.pctx){
+
+        strokeStyle = '#08f'
+        lineWidth = 2;
+
+        strokeRect(current[0]-3,current[1]-3, 6,6)
+
+        if(prior){
+          beginPath();
+          moveTo(prior[0],prior[1]);
+          lineTo(current[0],current[1]);
+          stroke();
+        }
+                    
+      }
+    }
+  },
+
+
+  function(){
+    recog.pctx.clearRect(0,0,recog.canvas.width,recog.canvas.height);
+
+    drawfn = function(current, prior){
+        // scale the current down to -90 -> +90
+
+        var x = ((current[0] / recog.canvas.width) * 180) - 90;
+        var y = ((current[1] / recog.canvas.height) * 180) - 90;
+
+        recog.canvas.style.webkitTransform = 'rotateY('+(x*-1)+'deg) rotateX('+y+'deg)';
+    }
+
+  },
+
+  // // zoomed into the image
+  // function(){
+  //   var w = recog.canvas.width, h = recog.canvas.height;
+    
+  //   drawfn = function(current, prior){
+  //     // scale the current down to -90 -> +90
+
+  //     var x = current[0] - (w/2);
+  //     var y = current[1] - (h/2);
+
+  //     if(x && y){
+  //       // 
+  //       recog.canvas.style.webkitTransform = 'scale(5) translate(' + x*-1 + 'px, ' + y*-1 + 'px) ';             
+  //     }
+  //   }
+  // },
+
+/*
+  function(){
+    var w = recog.canvas.width, h = recog.canvas.height;
+
+    var t;
+
+    drawfn = function(current, prior){
+      // console.log.apply(console,current)
+      // scale the current down to -90 -> +90
+
+      var x = current[0] - (w/2);
+      var y = current[1] - (h/2);
+
+      if(x && y){
+        recog.canvas.style.webkitTransform = 'scale(.75) translate(' + x + 'px, ' + y + 'px)';              
+      }
+
+      if(current[0]){
+        if(current[0] < ((w/5)*4)){
+          clearTimeout(t); t = null;
+        } else {
+          if(!t){
+            t = setTimeout(function(){
+              console.log("GO NEXT!!!!!!!");
+
+              recog.canvas.style.webkitTransition = '-webkit-transform 1s';
+              recog.canvas.style.webkitTransform = 'translate(1500px, ' + y + 'px) scale(.03) ';  
+
+              setTimeout(function(){
+                recog.destroy();
+                Reveal.next()
+              },1000)
+              // no draw function
+              drawfn = function(){};
+            },1000)
+          }
+        }
+      }
+    }
+
+  }
+
+     */   
+
+
+
+
+
+
+
+])
 
 
 

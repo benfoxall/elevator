@@ -288,7 +288,7 @@
 
   Bauble.prototype.destroy = function(){
     this._process_action = 'finish';
-    this.mediaStream.stop();
+    if(this.mediaStream) this.mediaStream.stop();
     this.video.remove()
     this.canvas.remove()
     return this;
