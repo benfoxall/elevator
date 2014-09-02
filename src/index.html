@@ -35,25 +35,28 @@
 			text-align: left;
 		}
 		.reveal #first h3{
-			font-family: Cambria;
-			margin:0;
-			padding-top:100px;
-			padding-left:50px;
+			font-family: Din Alternate;
+			margin: 0;
+			padding-top: 100px;
+			padding-left: 50px;
+			color: #333;
 		}
 		.reveal #first h4{
-
 			padding-top:20px;
 			padding-left:50px;
+
 		}
 		#bauble canvas{
 			width: 960px;
 			height: 540px;
 		}
 		.reveal .twitter{
-	    font-family: 'Helvetica Neue';
-	    color:#000 !important;
-	    margin-bottom:70px;
-	    display: block;
+		    /*font-family: 'Helvetica Neue';*/
+			font-family: Din Alternate;
+		    /*color: #357CB4 !important;*/
+		    color: #444 !important;
+		    margin-bottom:70px;
+		    display: block;
 		}
 		</style>
 	</head>
@@ -153,15 +156,26 @@
 
 				<section id="bauble"></section>
 
-				<section id="me">
+				<section data-transition="concave" id="me" data-transition-speed="slow">
 					<h2>
 						<a class="twitter" href="http://twitter.com/benjaminbenben">@benjaminbenben</a>
 					</h2>
-					<img src="img/wo.png" width="200" />
+					<div>
+						<img src="img/wo.png" width="250" />
+						<img id="adventureclub" src="img/adventureclub.png" width="60" />
+					</div>
 				</section>
 
 			</div>
 		</div>
+
+		<style type="text/css">
+		#adventureclub{
+			margin-bottom:-10px;
+			margin-left: 20px
+
+		}
+		</style>
 
 		<script src="lib/js/head.min.js"></script>
 		<script src="js/reveal.min.js"></script>

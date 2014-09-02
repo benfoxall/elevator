@@ -860,6 +860,8 @@ dyn_bauble_slide.fragments([
   function(){
     recog.pctx.clearRect(0,0,recog.canvas.width,recog.canvas.height);
 
+    var t;
+
     drawfn = function(current, prior){
         // scale the current down to -90 -> +90
 
@@ -867,6 +869,37 @@ dyn_bauble_slide.fragments([
         var y = ((current[1] / recog.canvas.height) * 180) - 90;
 
         recog.canvas.style.webkitTransform = 'rotateY('+(x*-1)+'deg) rotateX('+y+'deg)';
+
+
+
+        // sense the left side of panel
+
+        var w = recog.canvas.width, h = recog.canvas.height;
+
+
+        if(current[0]){
+          if(current[0] > ((w/5))){
+            clearTimeout(t); t = null;
+          } else {
+            if(!t){
+              t = setTimeout(function(){
+                console.log("GO NEXT!!!!!!!");
+
+                recog.canvas.style.webkitTransition = '-webkit-transform 1s';
+                recog.canvas.style.webkitTransform = 'translate(-1500px, ' + y + 'px) scale(.5) ';  
+
+                setTimeout(function(){
+                  recog.destroy();
+                  Reveal.next()
+                },1000)
+
+                // no draw function
+                drawfn = function(){};
+              },1000)
+            }
+          }
+        }
+
     }
 
   },
