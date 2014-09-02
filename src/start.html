@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>web page</title>
+
+		<meta name="description" content="A demo for finding things in images">
+		<meta name="author" content="Ben Foxall">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/simple.css" id="theme">
+
+
+		<link rel="stylesheet" type="text/css" href="/Waves/src/css/waves.css">
+		<link rel="stylesheet" type="text/css" href="/css/cameras.css">
+		<style type="text/css">
+		.reveal .icon-button{
+			background: #eee;
+			font-size:100px;
+			color:#000 !important;
+		}
+		#circleSelect{
+			/*background: rgba(0,0,255,0.2);*/
+			position: absolute;
+			cursor: crosshair;
+		}
+
+		/* for making sure the slides are at the right size */
+		#first{ 
+			width:960px;
+			height:540px;
+			/*box-shadow: #aaa 0px 0px 15px;*/
+			text-align: left;
+		}
+		.reveal #first h3{
+			font-family: Din Alternate;
+			margin: 0;
+			padding-top: 100px;
+			padding-left: 50px;
+			color: #333;
+		}
+		.reveal #first h4{
+			padding-top:20px;
+			padding-left:50px;
+		}
+		.reveal #first h5{
+			display: block;
+			font-family: Din Alternate;
+			padding-top:30px;
+			padding-left:50px;
+			color:#ddd;
+			font-size:20px;
+		}
+		#bauble canvas{
+			width: 960px;
+			height: 540px;
+		}
+		.reveal .twitter{
+		    /*font-family: 'Helvetica Neue';*/
+			font-family: Din Alternate;
+		    /*color: #357CB4 !important;*/
+		    color: #444 !important;
+		    margin-bottom:70px;
+		    display: block;
+		}
+
+		.reveal #first a{
+			color:#333;
+		}
+		.reveal #first a:hover{
+			color:#f08;
+		}
+		</style>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<div id="first">
+						<h3><a href="/">Finding objects in images by colour</a></h3>
+						<h4><a href="http://twitter.com/benjaminbenben" class="twitter">@benjaminbenben</a></h4>
+					</div>
+				</section>
+
+			</div>
+		</div>
+
+		<style type="text/css">
+		#adventureclub{
+			margin-bottom:-10px;
+			margin-left: 20px
+
+		}
+		</style>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+			Reveal.initialize({
+				controls: false,
+				progress: false,
+				history: true,
+				center: true,
+
+				transition: 'none',
+
+				width: 960,
+				height: 540, 
+				margin: 0,
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					// { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					// { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+				]
+			});
+
+
+		</script>
+
+	</body>
+</html>
