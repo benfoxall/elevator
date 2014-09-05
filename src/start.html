@@ -72,6 +72,13 @@
 		.reveal #first a:hover{
 			color:#f08;
 		}
+
+		body{
+			transition:all .1s;
+		}
+		.bad{
+			background-color:#fc0;
+		}
 		</style>
 	</head>
 	<body>
@@ -118,6 +125,10 @@
 				]
 			});
 
+			setInterval(function(){
+				document.body.className = (window.innerWidth/window.outerWidth) === 1 ? 'fine' : 'bad'	
+			},100)
+			
 
 		</script>
 

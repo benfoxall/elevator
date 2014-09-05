@@ -138,9 +138,9 @@ function calibrate(data){
         if(hx > minh && hx < maxh
           && sx > mins && sx < maxs
           && vx > minv && vx < maxv){
-          image.data[i] = 0;
+          image.data[i] = 255;
           image.data[i+1] = 0;
-          image.data[i+2] = 0;
+          image.data[i+2] = 100;
           
         } else {
           image.data[i+3] = 0; 
@@ -154,6 +154,7 @@ function calibrate(data){
 
     buckets:  buckets,
     capBox:  {left:xmin, right:xmax, top:ymin, bottom:ymax},
+    circle:  [cx, cy, cr],
     peaks:   [ah,as,av],
     windows: [minh, maxh, mins, maxs, minv, maxv],
     image: image

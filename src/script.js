@@ -214,12 +214,12 @@ function rgb_hsv(r, g, b){
   v = cmax;
 
   // 0 --> 255
-  // h = (((h || 0)+360) % 360 ) / 1.411764 
+  h1 = (((h || 0)+360) % 360 ) / 1.411764 
 
   // 0 --> 2PI
-  h = (((h || 0)+360) % 360 ) * ((Math.PI*2)/360);
+  h2 = (((h || 0)+360) % 360 ) * ((Math.PI*2)/360);
 
-  return [h, s, v]
+  return [h2, s, v, h1]
 
 }
 
@@ -454,13 +454,26 @@ baubleWorker.onmessage = function(oEvent){
   for (var i = ms.length - 1; i >= 0; i--) {
     hsv = rgb_hsv.apply(this,three_rgb(colors[i]));
 
+    // ms[i] = 
+    //   (minh < maxh ? 
+    //     (minh < hsv[0] && maxh > hsv[0]) : 
+    //     (minh > hsv[0] || maxh < hsv[0])
+    //     // hsv[0] > minh || hsv[0] < maxh :
+    //     // hsv[0] < minh && hsv[0] > maxh
+    //   ) &&
+    //   mins < hsv[1] && maxs > hsv[1]  &&
+    //   minv < hsv[2] && maxv > hsv[2]
+    // ? 1 : 0;
+
     ms[i] = 
-      (minh < maxh ? 
-        hsv[0] > minh || hsv[0] < maxh :
-        hsv[0] < minh && hsv[0] > maxh
-      ) &&
-      mins < hsv[1] && maxs > hsv[1]  &&
-      minv < hsv[2] && maxv > hsv[2]
+
+            (hsv[3] > minh && hsv[3] < maxh
+          && hsv[1] > mins && hsv[1] < maxs
+          && hsv[2] > minv && hsv[2] < maxv) 
+
+          // (hsv[1] > mins && hsv[1] < maxs
+          // && hsv[2] > minv && hsv[2] < maxv)
+
     ? 1 : 0;
 
   };
@@ -491,7 +504,7 @@ function highlight(x,y,r){
         cx: x,
         cy: y,
         cr: r,
-        windows: [15,30,60]// TODO MAKE TAILORABLE
+        windows: [15,30,30]// TODO MAKE TAILORABLE
 
       },[cdata.data.buffer]);
 

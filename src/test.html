@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>test</title>
+</head>
+<body>
+<div id="target"></div>
+<button id="calibrate_button"></button>
+</body>
+
+
+<script src="js/bauble/bauble.js"></script>
+<script type="text/javascript">
+
+var workerUrl = "js/bauble/bauble-worker.js";
+var baubleWorker = new Worker(workerUrl);
+
+
+
+  recog = new Bauble({worker:workerUrl})
+
+
+  recog.getUserMedia()
+      .attachTo('#target')
+      .on('point', function(x,y){
+        // do something awesome!!
+      });
+
+  // click #calibrate_button to mark as calibrated
+  calibrate_button.onclick = function(){
+    recog.setCalibrating(false);
+  }
+
+  //   recog
+  //     .setCalibrating(false)
+  //     .setWindow(maxh, minh, maxs, mins, maxv, minv)
+  //     .attachTo('#bauble')
+  //     .on('point', function(x,y){
+  //       // do something awesome!!
+  //       // console.log(x);
+  //   // console.log('yay', x,y)
+  //         if(x && y){
+  //           drawfn([x,y], priorpoint)
+  //           priorpoint = [x,y]
+  //         } else {
+  //           priorpoint = null;
+  //         }
+  //     });
+
+  // recog._waitForVideo();
+
+	
+
+</script>
+</html>

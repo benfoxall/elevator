@@ -51,7 +51,16 @@
     var self = this;
 
     getMedia.call(navigator,
-       {video: true},
+
+      {
+        video: {
+          mandatory: {
+            maxWidth: 640,
+            maxHeight: 360,
+          }
+        },
+        audio: false
+      },
 
        // successCallback
        function(localMediaStream) {
@@ -113,7 +122,12 @@
         type:'calibrate',
 
         image: image,
-        calibration_size: Math.min(this.height,this.width) / 5,
+
+        // calibration_size: Math.min(this.height,this.width) / 5,
+        cx: this.width/2,
+        cy: this.height/2,
+        cr: 50,
+
         windows: [15,30,30]// TODO MAKE TAILORABLE
 
       },[image.data.buffer]);
@@ -182,12 +196,20 @@
 
       this.pctx.putImageData(oEvent.data.image, 0,0);
 
-      this.pctx.strokeStyle = 'rgba(0,255,0,0.6);';
-      this.pctx.strokeRect(
-        capBox.left, capBox.top, 
-        capBox.right - capBox.left, 
-        capBox.bottom - capBox.top
-      );
+      // this.pctx.strokeStyle = 'rgba(0,255,0,0.6);';
+      // this.pctx.strokeRect(
+      //   capBox.left, capBox.top, 
+      //   capBox.right - capBox.left, 
+      //   capBox.bottom - capBox.top
+      // );
+
+      var circle = oEvent.data.circle
+      if(circle){
+        recog.pctx.beginPath();
+        recog.pctx.arc(circle[0],circle[1],circle[2],0,Math.PI*2)
+        recog.pctx.stroke();        
+      }
+
 
       // draw the histograms
 
